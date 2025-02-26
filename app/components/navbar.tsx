@@ -7,7 +7,7 @@ export default function Navbar() {
                     Home
                 </a>
                 <a href="/about" className="text-stone-700 hover:text-stone-900">
-                    About
+                    About Us
                 </a>
             </div>
         </nav>
