@@ -11,7 +11,7 @@ export default function MenuCard(item: { name: string, image: string, descriptio
                     <div className="flex justify-end items-end m-2">
                         <p className="text-stone-700 font-semibold m-2">☆ {item.rating}</p>
                         <p className="text-stone-700 font-semibold m-2">${item.price.toFixed(2)}</p>
-                        <button className="bg-red-400 text-white font-semibold py-2 px-4 ml-2 rounded-lg">+</button>
+                        <button className="bg-red-400 text-white font-semibold py-2 px-4 mx-2 rounded-lg">+</button>
                     </div>
                 </div>
             </div>
