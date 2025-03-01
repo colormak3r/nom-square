@@ -10,6 +10,10 @@ export default function Navbar() {
                 <a href="/about" className="text-stone-700 font-semibold hover:text-stone-900">
                     About Us
                 </a>
+                <p className="text-stone-700 font-semibold">•</p>
+                <a href="/employee" className="text-stone-700 font-semibold hover:text-stone-900">
+                  Employee
+                </a>
             </div>
         </nav>
     );
