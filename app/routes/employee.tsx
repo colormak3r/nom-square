@@ -1,8 +1,8 @@
-import NavBar from "../components/navbar";
+import NavBar from "../components/common/navbar";
 import { useEffect, useState } from "react";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
-import type { Employee as EmployeeType } from "../types/types";
+import type { EmployeeInfo as EmployeeType } from "../types/types";
 
 export default function Employee() {
   const [employees, setEmployees] = useState<EmployeeType>({

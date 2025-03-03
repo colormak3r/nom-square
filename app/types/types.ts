@@ -1,71 +1,72 @@
-export interface Allergies {
+export interface AllergyInfo {
   id: string; // Firestore document ID
   name: string; // Allergy name (e.g., "Peanuts")
 }
 
-export interface MenuItem {
+export interface MenuItemInfo {
   id: string; // Firestore document ID
   name: string;
   description: string;
   price: number;
+  rating: number;
   photo_url: string;
-  allergies: string[];
-  add_ons: string[];
+  // allergies: Allergies[];
+  // add_ons: AddOn[];
 }
 
-export interface AddOn {
+export interface AddOnInfo {
   id: string; // Firestore document ID
   name: string;
   price: number;
 }
 
-export interface Photos {
+export interface PhotoInfo {
   id: string; // Firestore document ID
   url: string;
   menuItemId: string; // Reference to MenuItem
 }
 
-export interface RestaurantCategories {
+export interface MenuCategoryInfo {
   id: string; // Firestore document ID
   name: string;
-  menuItems: string[]; // Array of MenuItem IDs
+  menuItems: MenuItemInfo[]; // Array of MenuItem IDs
 }
 
-export interface OrderItems {
-  menuItem: MenuItem;
+export interface OrderItemInfo {
+  menuItem: MenuItemInfo;
   quantity: number;
 }
 
-export interface Restaurant {
+export interface RestaurantInfo {
   id: string;  // Firestore document ID
   name: string;
   location: string;
 }
 
-export interface Tables {
+export interface TableInfo {
   id: string; // Firestore document ID
   number: number;
   capacity: number;
 }
 
-export interface Orders {
+export interface OrderInfo {
   id: string;  // Firestore document ID
   employeeId: string;
   tableId: string;
-  items: MenuItem[];
+  items: MenuItemInfo[];
 }
 
-export interface Employee {
+export interface EmployeeInfo {
   id: string; // Firestore document ID
   name: string;
   role: string;
   orders: string[]; // Array of order IDs
 }
 
-export interface EmployeeWorkplace {
+export interface EmployeeWorkplaceInfo {
   id: string; // Firestore document ID
   name: string;
   location: string;
-  employees: Employee[];
+  employees: EmployeeInfo[];
 }
 
