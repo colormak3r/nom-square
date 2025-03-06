@@ -6,7 +6,6 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
 import type { Route } from "./+types/root";
 import "./app.css";
 
@@ -42,7 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -62,14 +61,22 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
+    <main className="h-screen flex flex-col justify-center items-center text-center bg-white">
+      <div className="p-8 max-w-md w-full">
+        <h1 className="text-3xl font-bold text-red-600">{message}</h1>
+        <p className="text-stone-700 mt-2">{details}</p>
+        <a
+          href="/"
+          className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded-md"
+        >
+          Go back to the main page
+        </a>
+        {stack && (
+          <pre className="w-full p-4 overflow-x-auto bg-gray-100 border rounded-md mt-4 text-left text-sm">
+            <code>{stack}</code>
+          </pre>
+        )}
+      </div>
     </main>
   );
 }
