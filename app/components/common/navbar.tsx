@@ -1,9 +1,12 @@
 export default function Navbar() {
   return (
     <nav className="flex items-center justify-between p-4 bg-red-400 sticky top-0 shadow-md z-50">
-      <div className="text-xl font-bold text-stone-700 border rounded-2xl p-4">
+      <a
+        href="/"
+        className="text-xl font-bold text-stone-700 border rounded-2xl p-4"
+      >
         Nom<sup>2</sup>
-      </div>
+      </a>
       <div className="flex flex-row space-x-4">
         <a
           href="/"
