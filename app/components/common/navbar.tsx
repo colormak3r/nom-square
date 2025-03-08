@@ -25,6 +25,13 @@ export default function Navbar() {
         >
           Employee
         </a>
+        <p className="text-stone-700 font-semibold">•</p>
+        <a
+          href="/menuedit"
+          className="text-stone-700 font-semibold hover:text-stone-900"
+        >
+          Menu Editer
+        </a>
       </div>
     </nav>
   );
