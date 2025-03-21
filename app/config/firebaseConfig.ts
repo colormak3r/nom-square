@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -18,24 +18,9 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
- 
-// Initialize Firebase
-// Prevent duplicate Firebase initialization
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize Analytics only in the browser
-let analytics;
-if (typeof window !== "undefined") {
-  isSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app);
-      console.log("Firebase Analytics initialized.");
-    } else {
-      console.log("Firebase Analytics is not supported in this environment.");
-    }
-  });
-}
-
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-export { app, analytics, db };
+export { app, db, auth, firebaseConfig };
