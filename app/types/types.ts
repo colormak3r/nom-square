@@ -32,9 +32,10 @@ export interface MenuCategoryInfo {
   menuItems: MenuItemInfo[]; // Array of MenuItem IDs
 }
 
-export interface OrderItemInfo {
+export interface CartItemInfo {
   menuItem: MenuItemInfo;
   quantity: number;
+  options: string[];
 }
 
 export interface RestaurantInfo {
