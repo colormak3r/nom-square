@@ -4,9 +4,12 @@ import { Outlet } from "react-router-dom";
 
 const Layout = () => {
   return (
-    <main>
-      <Outlet />
-    </main>
+    <div className="min-h-screen w-full bg-gradient-to-b from-red-300 to-orange-200">
+      <NavBar />
+      <main className="mt-4">
+        <Outlet />
+      </main>
+    </div>
   );
 };
 

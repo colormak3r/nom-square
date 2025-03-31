@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import userAuth from "~/components/auth/userAuth";
 import NoPermission from "~/error/401";
+import { Navigate } from "react-router-dom";
 
 export default function ProtectedRoute() {
   const { user } = userAuth();
@@ -23,5 +24,5 @@ export default function ProtectedRoute() {
     );
   }
 
-  return user ? <Outlet /> : <NoPermission />;
+  return user ? <Outlet /> : <Navigate to="/401" replace />;
 }

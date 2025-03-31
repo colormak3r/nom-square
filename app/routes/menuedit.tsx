@@ -1,4 +1,3 @@
-import NavBar from "../components/common/navbar";
 import { useState, useEffect } from "react";
 import { db } from "../config/firebaseConfig";
 import { collection, addDoc, getDocs } from "firebase/firestore";
@@ -102,90 +101,82 @@ export default function AddMenuItem() {
   };
 
   return (
-    <>
-      <NavBar />
-      <div className="h-screen bg-gradient-to-b from-red-300 to-orange-200">
-        <div className="container mx-auto p-4 flex flex-col justify-center items-center">
-          <div className="p-4 rounded-lg shadow-md w-100 flex flex-col items-center">
-            <h1 className="text-4xl font-bold text-stone-900">Add Menu Item</h1>
-            <form
-              onSubmit={handleSubmit}
-              className="flex flex-col items-center"
-            >
-              <label className="text-stone-700 mt-4">Name</label>
-              <input
-                name="name"
-                value={menuItem.name}
-                onChange={handleChange}
-                type="text"
-                className="p-2 border border-stone-300 rounded-md"
-              />
-              <label className="text-stone-700 mt-4">Description</label>
-              <input
-                name="description"
-                value={menuItem.description}
-                onChange={handleChange}
-                type="text"
-                className="p-2 border border-stone-300 rounded-md"
-              />
-              <label className="text-stone-700 mt-4">Price</label>
-              <input
-                name="price"
-                value={menuItem.price}
-                onChange={handleChange}
-                type="number"
-                className="p-2 border border-stone-300 rounded-md"
-              />
-              <label className="text-stone-700 mt-4">Rating</label>
-              <input
-                name="rating"
-                value={menuItem.rating}
-                onChange={handleChange}
-                type="number"
-                className="p-2 border border-stone-300 rounded-md"
-              />
-              <label className="text-stone-700 mt-4">Upload Photo</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="p-2 border border-stone-300 rounded-md"
-              />
-              <button
-                className="p-2 mt-4 bg-stone-700 text-white rounded-md"
-                type="submit"
-              >
-                Add Item
-              </button>
-            </form>
-          </div>
-
-          {/* Display current menu items */}
-          <div className="mt-10 w-full max-w-lg">
-            <h2 className="text-2xl font-bold text-stone-900">
-              Current Menu Items
-            </h2>
-            <ul className="space-y-4 mt-4">
-              {menuItems.map((item) => (
-                <li
-                  key={item.id}
-                  className="p-4 border border-stone-300 rounded-md shadow-md"
-                >
-                  <h3 className="font-bold text-lg">{item.name}</h3>
-                  <p>{item.description}</p>
-                  <p>Price: ${item.price}</p>
-                  <p>Rating: {item.rating}</p>
-                  <img
-                    src={item.photo_url}
-                    alt={item.name}
-                    className="mt-2 w-32 h-32 object-cover"
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+    <div className="container mx-auto p-4 flex flex-col justify-center items-center">
+      <div className="p-4 rounded-lg shadow-md w-100 flex flex-col items-center">
+        <h1 className="text-4xl font-bold text-stone-900">Add Menu Item</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col items-center">
+          <label className="text-stone-700 mt-4">Name</label>
+          <input
+            name="name"
+            value={menuItem.name}
+            onChange={handleChange}
+            type="text"
+            className="p-2 border border-stone-300 rounded-md"
+          />
+          <label className="text-stone-700 mt-4">Description</label>
+          <input
+            name="description"
+            value={menuItem.description}
+            onChange={handleChange}
+            type="text"
+            className="p-2 border border-stone-300 rounded-md"
+          />
+          <label className="text-stone-700 mt-4">Price</label>
+          <input
+            name="price"
+            value={menuItem.price}
+            onChange={handleChange}
+            type="number"
+            className="p-2 border border-stone-300 rounded-md"
+          />
+          <label className="text-stone-700 mt-4">Rating</label>
+          <input
+            name="rating"
+            value={menuItem.rating}
+            onChange={handleChange}
+            type="number"
+            className="p-2 border border-stone-300 rounded-md"
+          />
+          <label className="text-stone-700 mt-4">Upload Photo</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="p-2 border border-stone-300 rounded-md"
+          />
+          <button
+            className="p-2 mt-4 bg-stone-700 text-white rounded-md"
+            type="submit"
+          >
+            Add Item
+          </button>
+        </form>
       </div>
-    </>
+
+      {/* Display current menu items */}
+      <div className="mt-10 w-full max-w-lg">
+        <h2 className="text-2xl font-bold text-stone-900">
+          Current Menu Items
+        </h2>
+        <ul className="space-y-4 mt-4">
+          {menuItems.map((item) => (
+            <li
+              key={item.id}
+              className="p-4 border border-stone-300 rounded-md shadow-md"
+            >
+              <h3 className="font-bold text-lg">{item.name}</h3>
+              <p>{item.description}</p>
+              <p>Price: ${item.price}</p>
+              <p>Rating: {item.rating}</p>
+              <img
+                src={item.photo_url}
+                alt={item.name}
+                className="mt-2 w-32 h-32 object-cover"
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
