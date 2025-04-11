@@ -2,8 +2,9 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { useFirestoreActions } from ".../../../front-end/app/hooks/useFirestoreActions";
+import UpdateAccount from "./updateaccount";
 
-const { deleteDocument } = useFirestoreActions("employees");
+const { deleteDocument, fetchEmployeesData } = useFirestoreActions("employees");
 
 export type EmployeeList = {
   id: string;
@@ -14,7 +15,7 @@ export type EmployeeList = {
   status: string;
   createdAt: string;
   updatedAt: string;
-  uid: string; // Assuming uid is part of the data
+  uid: string;
 };
 
 export const columns: ColumnDef<EmployeeList>[] = [
@@ -39,11 +40,6 @@ export const columns: ColumnDef<EmployeeList>[] = [
     cell: (info) => info.getValue(),
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: (info) => info.getValue(),
-  },
-  {
     accessorKey: "createdAt",
     header: "Created At",
     cell: (info) => info.getValue(),
@@ -58,9 +54,16 @@ export const columns: ColumnDef<EmployeeList>[] = [
     header: "Actions",
     cell: (info) => (
       <div className="flex gap-2">
-        <button className="bg-blue-500 text-white px-2 py-1 rounded">
+        {/* <button
+          className="bg-blue-500 text-white px-2 py-1 rounded"
+          onClick={() => {
+            const id = info.getValue() as string;
+            const uid = info.row.original.uid as string;
+            fetchEmployeesData(id, uid);
+          }}
+        >
           Edit
-        </button>
+        </button> */}
         <button
           className="bg-red-500 text-white px-2 py-1 rounded"
           onClick={() => {
