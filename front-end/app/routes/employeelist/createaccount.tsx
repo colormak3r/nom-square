@@ -18,6 +18,7 @@ import { Input } from "app/components/ui/input";
 import { Label } from "app/components/ui/label";
 import { Button } from "app/components/ui/button";
 import type { CreateEmployeeAccountInfo } from "../../types/types";
+import { useFirestoreActions } from "app/hooks/useFirestoreActions";
 import { toast } from "sonner";
 
 export default function CreateAccountDialog() {
@@ -27,35 +28,27 @@ export default function CreateAccountDialog() {
     password: "",
     role: "Admin",
   });
-
+  const { createEmployeeAccount } = useFirestoreActions("employees");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!employeeInfo.name || !employeeInfo.email || !employeeInfo.password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
     try {
-      const response = await fetch(`http://localhost:4000/api/add-user`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(employeeInfo),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to create user from backend");
-      }
-      const data = await response.json();
-      console.log("Response from backend:", data);
-      toast.success("Account created successfully!");
+      await createEmployeeAccount(employeeInfo);
+      setIsDialogOpen(false);
       setEmployeeInfo({
         name: "",
         email: "",
         password: "",
         role: "Admin",
       });
-      setIsDialogOpen(false);
     } catch (error) {
-      console.error("Error creating account from backend:", error);
-      toast.error("Failed to create user from backend.");
+      console.error("Error creating employee account:", error);
+      toast.error("Failed to create employee account.");
     }
   };
 

@@ -5,10 +5,12 @@ import CreateAccountDialog from "./createaccount";
 import { db } from "@app/config/firebaseConfig";
 import { collection, getDocs, query } from "firebase/firestore";
 import { useFirestoreActions } from "@app/hooks/useFirestoreActions";
+import UpdateAccount from "./updateaccount";
+
 export default function EmployeeList() {
   const [employeeData, setEmployeeData] = useState<any[]>([]);
-
   const { deleteDocument } = useFirestoreActions("employees");
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const fetchEmployeeData = async () => {
     const q = query(collection(db, "employees"));
