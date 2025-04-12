@@ -1,5 +1,5 @@
 import MenuCategory from "./menu_category";
-import type { MenuCategoryInfo } from "~/types/types";
+import type { MenuCategoryInfo } from "~/app/types/types";
 
 export default function MenuPanel({
   categories,

@@ -1,4 +1,4 @@
-import type { CartItemInfo } from "~/types/types";
+import type { CartItemInfo } from "~/app/types/types";
 
 export default function CartItem(item: CartItemInfo) {
   return (
@@ -16,7 +16,7 @@ export default function CartItem(item: CartItemInfo) {
           ))}
         </div>
       </div>
-      <div className="text-stone-700 font-semibold">$9.50</div>
+      <div className="text-stone-700 font-semibold">${item.menuItem.price}</div>
     </div>
   );
 }

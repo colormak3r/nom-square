@@ -1,8 +1,15 @@
-import type { MenuItemInfo } from "~/types/types";
+import type { MenuItemInfo } from "~/app/types/types";
+import { useCart } from "~/app/context/CartContext";
+import { useMenuItemModal } from "~/app/context/MenuItemModalContext";
 
 export default function MenuCard(item: MenuItemInfo) {
+  const { addToCart } = useCart();
+  const { openModal } = useMenuItemModal();
   return (
-    <div className="w-full rounded-2xl shadow-lg bg-white m-2">
+    <div
+      onClick={() => openModal(item)}
+      className="w-full rounded-2xl shadow-lg bg-white m-2"
+    >
       <div className="flex flex-col md:flex-row">
         <img
           src={item.photo_url}
@@ -19,7 +26,13 @@ export default function MenuCard(item: MenuItemInfo) {
             <p className="text-stone-700 font-semibold m-2">
               ${item.price.toFixed(2)}
             </p>
-            <button className="bg-red-400 text-white font-semibold py-2 px-4 mx-2 rounded-lg">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                addToCart(item, []);
+              }}
+              className="bg-red-400 text-white font-semibold py-2 px-4 mx-2 rounded-lg"
+            >
               +
             </button>
           </div>
