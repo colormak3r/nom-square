@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
-import { db } from "../config/firebaseConfig";
-import { collection, addDoc, getDocs } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import type { MenuItemInfo as MenuItemType } from "../types/types";
 import userAuth from "@app/components/auth/userAuth";
 import NoPermission from "@app/error/401";
 
 export default function AddMenuItem() {
   const { user } = userAuth();
-  if (!user) {
-    return <NoPermission />;
-  }
+  if (!user) return <NoPermission />;
+
   const [menuItem, setMenuItem] = useState<MenuItemType>({
     id: "",
     name: "",
@@ -18,67 +14,64 @@ export default function AddMenuItem() {
     price: 0,
     rating: 0,
     photo_url: "",
+    allergies: [],
+    add_ons: [],
   });
-  const [file, setFile] = useState<File | null>(null); // To hold the uploaded file
-  const [menuItems, setMenuItems] = useState<MenuItemType[]>([]); // State to hold the list of menu items
 
-  // Fetch current menu items from Firestore
+  const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
   useEffect(() => {
-    const fetchMenuItems = async () => {
-      const querySnapshot = await getDocs(collection(db, "menu_items"));
-      const items: MenuItemType[] = [];
-      querySnapshot.forEach((doc) => {
-        items.push({ id: doc.id, ...doc.data() } as MenuItemType);
-      });
-      setMenuItems(items);
-    };
-    fetchMenuItems();
+    fetch("http://localhost:4000/api/get-menu-items")
+      .then((res) => res.json())
+      .then((data) => setMenuItems(data))
+      .catch((err) =>
+        console.error("❌ Failed to fetch menu items:", err.message)
+      );
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setMenuItem((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "number" ? parseFloat(value) : value,
     }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Check if a file was uploaded
-    if (!file) {
-      alert("Please upload a photo");
-      return;
-    }
+    const method = isEditing ? "PUT" : "POST";
+    const url = isEditing
+      ? `http://localhost:4000/api/update-menu-item/${editingId}`
+      : "http://localhost:4000/api/add-menu-item";
 
     try {
-      // Upload the file to Firebase Storage
-      const storage = getStorage();
-      const fileRef = ref(storage, `menu_photos/${file.name}`);
-      await uploadBytes(fileRef, file);
-
-      // Get the download URL
-      const downloadURL = await getDownloadURL(fileRef);
-
-      // Add the menu item to Firestore with the download URL for the photo
-      const docRef = await addDoc(collection(db, "menu_items"), {
-        name: menuItem.name,
-        description: menuItem.description,
-        price: parseFloat(menuItem.price.toString()),
-        rating: parseFloat(menuItem.rating.toString()),
-        photo_url: downloadURL, // Save the file URL
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...menuItem, photo_url: "" }),
       });
 
-      console.log("Document written with ID: ", docRef.id);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed");
 
-      // Reset the form
+      if (isEditing) {
+        setMenuItems((prev) =>
+          prev.map((item) =>
+            item.id === editingId ? { ...menuItem, id: editingId } : item
+          )
+        );
+        setSuccessMsg("Menu item updated!");
+      } else {
+        setMenuItems((prev) => [...prev, { ...menuItem, id: result.id }]);
+        setSuccessMsg("Menu item added!");
+      }
+
       setMenuItem({
         id: "",
         name: "",
@@ -86,93 +79,165 @@ export default function AddMenuItem() {
         price: 0,
         rating: 0,
         photo_url: "",
+        allergies: [],
+        add_ons: [],
       });
-      setFile(null); // Reset the file input
+      setIsEditing(false);
+      setEditingId(null);
+    } catch (err) {
+      console.error("❌ Error submitting menu item:", err);
+      alert("Failed to submit item.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-      // Re-fetch the menu items to include the newly added one
-      const updatedMenuItems = [
-        ...menuItems,
-        { ...menuItem, photoUrl: downloadURL },
-      ];
-      setMenuItems(updatedMenuItems);
-    } catch (e) {
-      console.error("Error adding document: ", e);
+  const handleDelete = async (id: string) => {
+    const confirmed = window.confirm("Are you sure you want to delete this item?");
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`http://localhost:4000/api/delete-menu-item/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete");
+
+      setMenuItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (err) {
+      console.error("❌ Error deleting item:", err);
     }
   };
 
   return (
-    <div className="container mx-auto p-4 flex flex-col justify-center items-center">
-      <div className="p-4 rounded-lg shadow-md w-100 flex flex-col items-center">
-        <h1 className="text-4xl font-bold text-stone-900">Add Menu Item</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col items-center">
-          <label className="text-stone-700 mt-4">Name</label>
-          <input
-            name="name"
-            value={menuItem.name}
-            onChange={handleChange}
-            type="text"
-            className="p-2 border border-stone-300 rounded-md"
-          />
-          <label className="text-stone-700 mt-4">Description</label>
-          <input
-            name="description"
-            value={menuItem.description}
-            onChange={handleChange}
-            type="text"
-            className="p-2 border border-stone-300 rounded-md"
-          />
-          <label className="text-stone-700 mt-4">Price</label>
-          <input
-            name="price"
-            value={menuItem.price}
-            onChange={handleChange}
-            type="number"
-            className="p-2 border border-stone-300 rounded-md"
-          />
-          <label className="text-stone-700 mt-4">Rating</label>
-          <input
-            name="rating"
-            value={menuItem.rating}
-            onChange={handleChange}
-            type="number"
-            className="p-2 border border-stone-300 rounded-md"
-          />
-          <label className="text-stone-700 mt-4">Upload Photo</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="p-2 border border-stone-300 rounded-md"
-          />
-          <button
-            className="p-2 mt-4 bg-stone-700 text-white rounded-md"
-            type="submit"
-          >
-            Add Item
-          </button>
-        </form>
-      </div>
+    <div className="flex flex-col items-center px-4">
+      <h1 className="text-5xl font-pacifico mt-10 mb-6 text-center text-stone-900">
+        {isEditing ? "Edit Menu Item" : "Add Menu Item"}
+      </h1>
 
-      {/* Display current menu items */}
-      <div className="mt-10 w-full max-w-lg">
-        <h2 className="text-2xl font-bold text-stone-900">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-2xl bg-white p-6 rounded-xl shadow-lg flex flex-col gap-4"
+      >
+        <input
+          name="name"
+          value={menuItem.name}
+          onChange={handleChange}
+          placeholder="Name"
+          className="p-3 border border-stone-300 rounded-md"
+          required
+        />
+        <input
+          name="description"
+          value={menuItem.description}
+          onChange={handleChange}
+          placeholder="Description"
+          className="p-3 border border-stone-300 rounded-md"
+          required
+        />
+        <input
+          name="price"
+          value={menuItem.price || ""}
+          onChange={handleChange}
+          type="number"
+          placeholder="Price (e.g. 8.99)"
+          className="p-3 border border-stone-300 rounded-md"
+          required
+        />
+        <input
+          name="rating"
+          value={menuItem.rating || ""}
+          onChange={handleChange}
+          type="number"
+          placeholder="Rating (1 to 5)"
+          className="p-3 border border-stone-300 rounded-md"
+        />
+        <input
+          name="allergies"
+          value={menuItem.allergies.join(", ")}
+          onChange={(e) =>
+            setMenuItem((prev) => ({
+              ...prev,
+              allergies: e.target.value.split(",").map((a) => a.trim()),
+            }))
+          }
+          placeholder="Allergies (comma separated)"
+          className="p-3 border border-stone-300 rounded-md"
+        />
+        <input
+          name="add_ons"
+          value={menuItem.add_ons.join(", ")}
+          onChange={(e) =>
+            setMenuItem((prev) => ({
+              ...prev,
+              add_ons: e.target.value.split(",").map((a) => a.trim()),
+            }))
+          }
+          placeholder="Add-ons (comma separated)"
+          className="p-3 border border-stone-300 rounded-md"
+        />
+        <button
+          type="submit"
+          className="bg-stone-800 text-white py-3 rounded-md text-lg hover:bg-stone-700 transition"
+          disabled={isSubmitting}
+        >
+          {isSubmitting
+            ? isEditing
+              ? "Updating..."
+              : "Adding..."
+            : isEditing
+            ? "Update Item"
+            : "Add Item"}
+        </button>
+
+        {successMsg && (
+          <p className="text-green-600 font-medium text-center mt-2">{successMsg}</p>
+        )}
+      </form>
+
+      <div className="mt-12 w-full max-w-2xl">
+        <h2 className="text-3xl font-bold text-center mb-6 text-stone-800">
           Current Menu Items
         </h2>
-        <ul className="space-y-4 mt-4">
+        <ul className="space-y-4">
           {menuItems.map((item) => (
             <li
               key={item.id}
-              className="p-4 border border-stone-300 rounded-md shadow-md"
+              className="p-4 border border-gray-300 rounded-md bg-white shadow-sm flex justify-between items-start"
             >
-              <h3 className="font-bold text-lg">{item.name}</h3>
-              <p>{item.description}</p>
-              <p>Price: ${item.price}</p>
-              <p>Rating: {item.rating}</p>
-              <img
-                src={item.photo_url}
-                alt={item.name}
-                className="mt-2 w-32 h-32 object-cover"
-              />
+              <div>
+                <h3 className="text-lg font-semibold text-stone-900">
+                  {item.name}
+                </h3>
+                <p className="text-sm text-stone-700">{item.description}</p>
+                <p className="text-sm text-stone-700">
+                  Price: ${item.price || "N/A"} | Rating: {item.rating || "N/A"}
+                </p>
+                <p className="text-sm text-stone-700">
+                  Allergies: {item.allergies?.join(", ") || "None"}
+                </p>
+                <p className="text-sm text-stone-700">
+                  Add-ons: {item.add_ons?.join(", ") || "None"}
+                </p>
+              </div>
+              <div className="space-x-2">
+                <button
+                  onClick={() => {
+                    setMenuItem(item);
+                    setIsEditing(true);
+                    setEditingId(item.id);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
