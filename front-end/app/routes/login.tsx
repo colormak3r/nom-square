@@ -1,8 +1,9 @@
 import React, { use, useEffect, useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@app/config/firebaseConfig";
+import { auth, db } from "@app/config/firebaseConfig";
 import { Navigate, useNavigate } from "react-router-dom";
 import useAuth from "@app/components/auth/userAuth";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -38,6 +39,10 @@ export default function Login() {
         password
       );
       if (userCredential) {
+        const user = userCredential.user;
+        const roleDoc = await getDoc(doc(db, "employees", user.uid));
+        const role = roleDoc.data()?.role;
+        localStorage.setItem("userRole", role);
         console.log("User:", userCredential.user);
         navigate("/menuedit");
       }

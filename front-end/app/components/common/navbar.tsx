@@ -1,18 +1,16 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useContext } from "react";
 import { auth } from "../../config/firebaseConfig";
 import type { User } from "firebase/auth"; // Import the User type correctly
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
+import AuthContext from "../context/authContext";
 
 export default function Navbar() {
-  const [user, setUser] = useState<User | null>(null);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
+  const { user, loading } = context;
 
   const handleLogout = async () => {
     try {
@@ -45,7 +43,7 @@ export default function Navbar() {
         >
           About Us
         </a>
-        {user && (
+        {!loading && user && (
           <>
             <p className="text-stone-700 font-semibold">•</p>
             <a
@@ -54,31 +52,37 @@ export default function Navbar() {
             >
               Menu Editor
             </a>
-            <p className="text-stone-700 font-semibold">•</p>
-            <a
-              href="/employeelist"
-              className="text-stone-700 font-semibold hover:text-stone-900"
-            >
-              Employee List
-            </a>
+
+            {user.role === "Admin" && (
+              <>
+                <p className="text-stone-700 font-semibold">•</p>
+                <a
+                  href="/employeelist"
+                  className="text-stone-700 font-semibold hover:text-stone-900"
+                >
+                  Employee List
+                </a>
+              </>
+            )}
           </>
         )}
         <p className="text-stone-700 font-semibold">•</p>
-        {user ? (
-          <button
-            onClick={() => signOut(auth)}
-            className="text-stone-700 font-semibold hover:text-stone-900"
-          >
-            Logout
-          </button>
-        ) : (
-          <a
-            href="/employee"
-            className="text-stone-700 font-semibold hover:text-stone-900"
-          >
-            Employee
-          </a>
-        )}
+        {!loading &&
+          (user ? (
+            <button
+              onClick={handleLogout}
+              className="text-stone-700 font-semibold hover:text-stone-900"
+            >
+              Logout
+            </button>
+          ) : (
+            <a
+              href="/employee"
+              className="text-stone-700 font-semibold hover:text-stone-900"
+            >
+              Employee
+            </a>
+          ))}
       </div>
     </nav>
   );

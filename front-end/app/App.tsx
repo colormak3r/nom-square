@@ -8,6 +8,7 @@ import Layout from "./components/layout/Layout";
 import EmployeesList from "./routes/employeelist/page";
 import NoPermission from "./error/401";
 import NotFound from "./error/404";
+import RequireAdmin from "./components/auth/requiredAmin";
 
 export default function AppRoutes() {
   return (
@@ -19,7 +20,14 @@ export default function AppRoutes() {
           <Route path="employee" element={<Login />} />
           <Route element={<ProtectedRoute />}>
             <Route path="menuedit" element={<EditMenu />} />
-            <Route path="employeelist" element={<EmployeesList />} />
+            <Route
+              path="employeelist"
+              element={
+                <RequireAdmin>
+                  <EmployeesList />
+                </RequireAdmin>
+              }
+            />
           </Route>
         </Route>
         <Route path="/401" element={<NoPermission />} />
