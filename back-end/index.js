@@ -135,3 +135,98 @@ const PORT = process.env.PORT || 4000;
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
 );
+
+
+app.post("/api/add-menu-item", async (req, res) => {
+  const { name, description, price, rating, allergies, add_ons, photo_url } = req.body;
+
+  // ✅ Remove photo_url from required fields
+  if (!name || !description || !price) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  // ✅ Use fallback image if no photo_url provided
+  const fallbackPhotoUrl = "https://via.placeholder.com/150";
+  const photo = photo_url || fallbackPhotoUrl;
+
+  try {
+    const docRef = await db.collection("menu_items").add({
+      name: name.trim(),
+      description: description.trim(),
+      price: parseFloat(price),
+      rating: parseFloat(rating || 0),
+      allergies: allergies || [],
+      add_ons: add_ons || [],
+      photo_url: photo,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    res.status(200).json({
+      id: docRef.id,
+      name: name.trim(),
+      description: description.trim(),
+      price: parseFloat(price),
+      rating: parseFloat(rating || 0),
+      allergies: allergies || [],
+      add_ons: add_ons || [],
+      photo_url: photo,
+      message: "Menu item added successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.get("/api/get-menu-items", async (req, res) => {
+  try {
+    const snapshot = await db.collection("menu_items").get();
+    const items = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    res.status(200).json(items);
+  } catch (error) {
+    console.error("❌ Failed to fetch menu items:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete("/api/delete-menu-item/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) return res.status(400).json({ error: "Missing item ID" });
+
+  try {
+    await db.collection("menu_items").doc(id).delete();
+    res.status(200).json({ message: `Item ${id} deleted` });
+  } catch (error) {
+    console.error("❌ Failed to delete item:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put("/api/update-menu-item/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, description, price, rating, allergies, add_ons } = req.body;
+
+  if (!name || !description || !price) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    await db.collection("menu_items").doc(id).update({
+      name: name.trim(),
+      description: description.trim(),
+      price: parseFloat(price),
+      rating: parseFloat(rating || 0),
+      allergies: allergies || [],
+      add_ons: add_ons || [],
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    res.status(200).json({ message: `Menu item ${id} updated.` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
