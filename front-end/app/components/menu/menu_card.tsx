@@ -8,13 +8,13 @@ export default function MenuCard(item: MenuItemInfo) {
   return (
     <div
       onClick={() => openModal(item)}
-      className="w-full rounded-2xl shadow-lg bg-white m-2"
+      className="w-full rounded-2xl shadow-lg bg-white m-2 hover:cursor-pointer"
     >
       <div className="flex flex-col md:flex-row">
         <img
           src={item.photo_url}
           alt={item.name}
-          className="sm.w-full md.w-40 h-40 object-cover rounded-lg"
+          className="sm.w-full md.w-40 aspect-square h-40 object-cover rounded-lg"
         />
         <div className="flex flex-col sm.flex-row justify-between w-full ml-2">
           <div>
@@ -31,7 +31,7 @@ export default function MenuCard(item: MenuItemInfo) {
                 e.stopPropagation();
                 addToCart(item, []);
               }}
-              className="bg-red-400 text-white font-semibold py-2 px-4 mx-2 rounded-lg"
+              className="bg-red-400 text-white font-semibold py-2 px-4 mx-2 rounded-lg hover:cursor-pointer hover:bg-red-500"
             >
               +
             </button>

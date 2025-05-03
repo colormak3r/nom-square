@@ -67,6 +67,22 @@ export default function Home() {
   const { selectedItem, closeModal } = useMenuItemModal();
   // Cart context for adding items to cart
   const { addToCart } = useCart();
+  // State for menu items
+  const [categories, setCategories] = useState<MenuCategoryInfo[]>(menuData);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/api/get-menu-items")
+      .then(res => res.json())
+      .then((items: MenuItemInfo[]) => {
+        // for now let’s assume you only ever want Breakfast:
+        setCategories([{
+          id: "1",
+          name: "All Day",
+          menuItems: items
+        }])
+      })
+      .catch(console.error)
+  }, []);
 
   // Show mobile view if screen width is less than 1280px
   const [isMobile, setIsMobile] = useState(
@@ -125,7 +141,7 @@ export default function Home() {
         />
       )}
 
-      {isMenuView ? isMobile ? <HomeMobile /> : <HomeDesktop /> : <CartPanel />}
+      {isMenuView ? isMobile ? <HomeMobile categories={categories} /> : <HomeDesktop categories={categories} /> : <CartPanel />}
       <div className="h-10"></div>
       {isMobile && (
         <MenuCartBar
@@ -138,11 +154,11 @@ export default function Home() {
   );
 }
 
-function HomeDesktop() {
+function HomeDesktop({ categories }: { categories: MenuCategoryInfo[] }) {
   return (
     <div className="flex flex-row w-4/5 space-x-8">
       <div className="grow-4">
-        <MenuPanel categories={menuData} />
+        <MenuPanel categories={categories} />
       </div>
       <div className="grow-3">
         <CartPanel />
@@ -151,6 +167,6 @@ function HomeDesktop() {
   );
 }
 
-function HomeMobile() {
-  return <MenuPanel categories={menuData} />;
+function HomeMobile({ categories }: { categories: MenuCategoryInfo[] }) {
+  return <MenuPanel categories={categories} />;
 }

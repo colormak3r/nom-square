@@ -146,7 +146,7 @@ app.post("/api/add-menu-item", async (req, res) => {
   }
 
   // ✅ Use fallback image if no photo_url provided
-  const fallbackPhotoUrl = "https://via.placeholder.com/150";
+  const fallbackPhotoUrl = "/placeholder/placeholder.png";
   const photo = photo_url || fallbackPhotoUrl;
 
   try {
