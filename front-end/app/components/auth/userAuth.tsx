@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    return { user: null, setUser: () => {} }; // Return default values instead of throwing an error
+    return { user: null, setUser: () => {} };
   }
   return context;
 };
