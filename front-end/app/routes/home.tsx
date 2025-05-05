@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
-import type { MenuCategoryInfo } from "@app/types/types";
+import { useEffect, useState } from "react";
+import type { MenuCategoryInfo, MenuItemInfo } from "@app/types/types";
 import MenuPanel from "@app/components/menu/menu_panel";
 import MenuCartBar from "@app/components/menu/menu_cart_bar";
 import CartPanel from "@app/components/cart/cart_panel";
+import { useMenuItemModal } from "../context/MenuItemModalContext";
+import { useCart } from "../context/CartContext";
+import MenuItemModal from "../components/menu/menu_modal_item";
 
 const menuData: MenuCategoryInfo[] = [
   {
@@ -16,6 +19,8 @@ const menuData: MenuCategoryInfo[] = [
         description: "Fluffy pancakes with syrup",
         rating: 4.7,
         price: 8.99,
+        allergies: ["gluten"],
+        add_ons: ["extra syrup", "whipped cream"],
       },
       {
         id: "2",
@@ -24,6 +29,8 @@ const menuData: MenuCategoryInfo[] = [
         description: "Cheesy omelette with veggies",
         rating: 4.6,
         price: 7.99,
+        allergies: ["dairy"],
+        add_ons: ["extra cheese", "avocado"],
       },
     ],
   },
@@ -38,6 +45,8 @@ const menuData: MenuCategoryInfo[] = [
         description: "A simply good burger",
         rating: 4.5,
         price: 10.99,
+        allergies: ["gluten"],
+        add_ons: ["extra patty", "bacon"],
       },
       {
         id: "4",
@@ -46,12 +55,35 @@ const menuData: MenuCategoryInfo[] = [
         description: "Fresh romaine with caesar dressing",
         rating: 4.3,
         price: 9.5,
+        allergies: ["dairy"],
+        add_ons: ["grilled chicken", "croutons"],
       },
     ],
   },
 ];
 
 export default function Home() {
+  // Modal context for menu item
+  const { selectedItem, closeModal } = useMenuItemModal();
+  // Cart context for adding items to cart
+  const { addToCart } = useCart();
+  // State for menu items
+  const [categories, setCategories] = useState<MenuCategoryInfo[]>(menuData);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/api/get-menu-items")
+      .then(res => res.json())
+      .then((items: MenuItemInfo[]) => {
+        // for now let’s assume you only ever want Breakfast:
+        setCategories([{
+          id: "1",
+          name: "All Day",
+          menuItems: items
+        }])
+      })
+      .catch(console.error)
+  }, []);
+
   // Show mobile view if screen width is less than 1280px
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" && window.innerWidth <= 1280
@@ -101,7 +133,15 @@ export default function Home() {
         </h1>
       )}
 
-      {isMenuView ? isMobile ? <HomeMobile /> : <HomeDesktop /> : <CartPanel />}
+      {selectedItem && (
+        <MenuItemModal
+          selectedItem={selectedItem}
+          closeModal={closeModal}
+          addToCart={addToCart}
+        />
+      )}
+
+      {isMenuView ? isMobile ? <HomeMobile categories={categories} /> : <HomeDesktop categories={categories} /> : <CartPanel />}
       <div className="h-10"></div>
       {isMobile && (
         <MenuCartBar
@@ -114,11 +154,11 @@ export default function Home() {
   );
 }
 
-function HomeDesktop() {
+function HomeDesktop({ categories }: { categories: MenuCategoryInfo[] }) {
   return (
     <div className="flex flex-row w-4/5 space-x-8">
       <div className="grow-4">
-        <MenuPanel categories={menuData} />
+        <MenuPanel categories={categories} />
       </div>
       <div className="grow-3">
         <CartPanel />
@@ -127,6 +167,6 @@ function HomeDesktop() {
   );
 }
 
-function HomeMobile() {
-  return <MenuPanel categories={menuData} />;
+function HomeMobile({ categories }: { categories: MenuCategoryInfo[] }) {
+  return <MenuPanel categories={categories} />;
 }

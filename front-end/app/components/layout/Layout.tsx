@@ -1,5 +1,6 @@
 import React from "react";
 import NavBar from "../common/navbar";
+import { CartProvider } from "~/app/context/CartContext";
 import { Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 
