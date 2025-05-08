@@ -9,11 +9,43 @@ export default function CheckoutModal({
   order: OrderItemInfo[];
   closeModal: () => void;
 }) {
+  // Calculate subtotal and tax
   const orderSubtotal = order.reduce(
     (sum, item) => sum + item.menuItem.price * item.quantity,
     0
   );
-  const tax = 0.0775; // Assuming tax is 7.75%
+  const tax = 0.0775;
+
+  // Handle sending order to the server
+  const sendOrder = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/api/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          accountName: "John Doe", // <-- TODO: Use account name
+          orderItems: order,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Failed to place order:", errorData);
+        alert(`❌ Failed to place order: ${errorData.error}`);
+        return;
+      }
+
+      const data = await res.json();
+      console.log("✅ Order placed successfully:", data);
+      alert("✅ Order placed successfully!");
+      closeModal(); // Close modal after placing order
+    } catch (error) {
+      console.error("Unexpected error placing order:", error);
+      alert("❌ Unexpected error placing order");
+    }
+  };
 
   return (
     <div
@@ -49,7 +81,10 @@ export default function CheckoutModal({
             </div>
           </div>
 
-          <button className="bg-red-400 text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:bg-red-500">
+          <button
+            onClick={sendOrder}
+            className="bg-red-400 text-white font-semibold p-2 rounded-lg hover:cursor-pointer hover:bg-red-500"
+          >
             Send Order
           </button>
         </div>

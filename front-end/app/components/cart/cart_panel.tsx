@@ -3,13 +3,17 @@ import { useCheckout } from "~/app/context/CheckoutContext";
 import CartItem from "./cart_item";
 
 export default function CartPanel() {
+  // Cart modal
   const { cart } = useCartModal();
   const cartSubtotal = cart.reduce(
     (sum, item) => sum + item.menuItem.price * item.quantity,
     0
   );
-  const tax = 0.0775; // Assuming tax is 7.75%
+  const tax = 0.0775;
+
+  // Checkout modal
   const { openCheckoutModal } = useCheckout();
+  
   return (
     <div className="w-9/10 rounded-2xl bg-white shadow-lg sticky top-30 p-4 m-4  mt-10">
       <h2 className="text-xl text-stone-700 font-bold">Cart</h2>

@@ -1,14 +1,3 @@
-// export interface AllergyInfo {
-//   id: string; // Firestore document ID
-//   name: string; // Allergy name (e.g., "Peanuts")
-// }
-
-// export interface AddOnInfo {
-//   id: string; // Firestore document ID
-//   name: string;
-//   price: number;
-// }
-
 export interface MenuItemInfo {
   id: string; // Firestore document ID
   name: string;
