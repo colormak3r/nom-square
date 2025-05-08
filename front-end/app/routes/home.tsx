@@ -4,8 +4,10 @@ import MenuPanel from "@app/components/menu/menu_panel";
 import MenuCartBar from "@app/components/menu/menu_cart_bar";
 import CartPanel from "@app/components/cart/cart_panel";
 import { useMenuItemModal } from "../context/MenuItemModalContext";
-import { useCart } from "../context/CartContext";
+import { useCartModal } from "../context/CartContext";
 import MenuItemModal from "../components/menu/menu_modal_item";
+import { useCheckout } from "../context/CheckoutContext";
+import CheckoutModal from "../components/cart/checkout_modal";
 
 const menuData: MenuCategoryInfo[] = [
   {
@@ -64,24 +66,28 @@ const menuData: MenuCategoryInfo[] = [
 
 export default function Home() {
   // Modal context for menu item
-  const { selectedItem, closeModal } = useMenuItemModal();
+  const { selectedItem, closeItemModal } = useMenuItemModal();
   // Cart context for adding items to cart
-  const { addToCart } = useCart();
+  const { addToCart } = useCartModal();
+  // Checkout context for checkout modal
+  const { order, closeCheckoutModal } = useCheckout();
   // State for menu items
   const [categories, setCategories] = useState<MenuCategoryInfo[]>(menuData);
 
   useEffect(() => {
     fetch("http://localhost:4000/api/get-menu-items")
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((items: MenuItemInfo[]) => {
         // for now let’s assume you only ever want Breakfast:
-        setCategories([{
-          id: "1",
-          name: "All Day",
-          menuItems: items
-        }])
+        setCategories([
+          {
+            id: "1",
+            name: "All Day",
+            menuItems: items,
+          },
+        ]);
       })
-      .catch(console.error)
+      .catch(console.error);
   }, []);
 
   // Show mobile view if screen width is less than 1280px
@@ -136,12 +142,24 @@ export default function Home() {
       {selectedItem && (
         <MenuItemModal
           selectedItem={selectedItem}
-          closeModal={closeModal}
+          closeModal={closeItemModal}
           addToCart={addToCart}
         />
       )}
 
-      {isMenuView ? isMobile ? <HomeMobile categories={categories} /> : <HomeDesktop categories={categories} /> : <CartPanel />}
+      {order.length > 0 && (
+        <CheckoutModal order={order} closeModal={closeCheckoutModal} />
+      )}
+
+      {isMenuView ? (
+        isMobile ? (
+          <HomeMobile categories={categories} />
+        ) : (
+          <HomeDesktop categories={categories} />
+        )
+      ) : (
+        <CartPanel />
+      )}
       <div className="h-10"></div>
       {isMobile && (
         <MenuCartBar

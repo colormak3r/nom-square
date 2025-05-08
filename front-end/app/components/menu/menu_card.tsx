@@ -1,13 +1,13 @@
 import type { MenuItemInfo } from "~/app/types/types";
-import { useCart } from "~/app/context/CartContext";
+import { useCartModal } from "~/app/context/CartContext";
 import { useMenuItemModal } from "~/app/context/MenuItemModalContext";
 
 export default function MenuCard(item: MenuItemInfo) {
-  const { addToCart } = useCart();
-  const { openModal } = useMenuItemModal();
+  const { addToCart } = useCartModal();
+  const { openItemModal } = useMenuItemModal();
   return (
     <div
-      onClick={() => openModal(item)}
+      onClick={() => openItemModal(item)}
       className="w-full rounded-2xl shadow-lg bg-white m-2 hover:cursor-pointer"
     >
       <div className="flex flex-col md:flex-row">

@@ -1,14 +1,15 @@
-import type { CartItemInfo } from "~/app/types/types";
-import { useCart } from "~/app/context/CartContext";
+import { useCartModal } from "~/app/context/CartContext";
+import { useCheckout } from "~/app/context/CheckoutContext";
 import CartItem from "./cart_item";
 
 export default function CartPanel() {
-  const { cart } = useCart();
+  const { cart } = useCartModal();
   const cartSubtotal = cart.reduce(
     (sum, item) => sum + item.menuItem.price * item.quantity,
     0
   );
   const tax = 0.0775; // Assuming tax is 7.75%
+  const { openCheckoutModal } = useCheckout();
   return (
     <div className="w-9/10 rounded-2xl bg-white shadow-lg sticky top-30 p-4 m-4  mt-10">
       <h2 className="text-xl text-stone-700 font-bold">Cart</h2>
@@ -33,7 +34,12 @@ export default function CartPanel() {
             ${(cartSubtotal * (1 + tax)).toFixed(2)}
           </div>
         </div>
-        <button className="bg-red-400 text-stone-700 font-semibold p-2 rounded-lg ">
+        <button
+          onClick={() => {
+            openCheckoutModal(cart);
+          }}
+          className="bg-red-400 text-stone-700 font-semibold p-2 rounded-lg hover:cursor-pointer hover:bg-red-500"
+        >
           Checkout
         </button>
       </div>
