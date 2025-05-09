@@ -65,7 +65,7 @@ export default function MenuItemModal({
             addToCart(selectedItem, selectedAddOns);
             closeModal();
           }}
-          className="bg-red-400 text-white font-semibold py-2 px-4 mt-4 rounded-lg w-full"
+          className="bg-red-400 text-white font-semibold py-2 px-4 mt-4 rounded-lg w-full hover:cursor-pointer hover:bg-red-500"
         >
           Add to Cart
         </button>

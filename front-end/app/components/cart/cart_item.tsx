@@ -1,6 +1,6 @@
-import type { CartItemInfo } from "~/app/types/types";
+import type { OrderItemInfo } from "~/app/types/types";
 
-export default function CartItem(item: CartItemInfo) {
+export default function CartItem(item: OrderItemInfo) {
   return (
     <div className="flex flex-row justify-between">
       <div className="flex flex-row">

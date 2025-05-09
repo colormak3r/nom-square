@@ -11,35 +11,37 @@ import NotFound from "./error/404";
 import RequireAdmin from "./components/auth/requiredAmin";
 import { CartProvider } from "~/app/context/CartContext";
 import { MenuItemModalProvider } from "~/app/context/MenuItemModalContext";
-
+import { CheckoutProvider } from "./context/CheckoutContext";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <MenuItemModalProvider>
-        <CartProvider>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="about" element={<About />} />
-              <Route path="employee" element={<Login />} />
-              <Route element={<ProtectedRoute />}>
-                <Route path="menuedit" element={<EditMenu />} />
-                <Route
-                  path="employeelist"
-                  element={
-                    <RequireAdmin>
-                      <EmployeesList />
-                    </RequireAdmin>
-                  }
-                />
+        <CheckoutProvider>
+          <CartProvider>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="about" element={<About />} />
+                <Route path="employee" element={<Login />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="menuedit" element={<EditMenu />} />
+                  <Route
+                    path="employeelist"
+                    element={
+                      <RequireAdmin>
+                        <EmployeesList />
+                      </RequireAdmin>
+                    }
+                  />
+                </Route>
               </Route>
-            </Route>
-            <Route path="/401" element={<NoPermission />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </CartProvider>
-        </MenuItemModalProvider>
+              <Route path="/401" element={<NoPermission />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </CartProvider>
+        </CheckoutProvider>
+      </MenuItemModalProvider>
     </BrowserRouter>
   );
 }

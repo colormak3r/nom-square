@@ -8,7 +8,7 @@ export default function MenuCartBar({
   onCartButtonClick: () => void;
 }) {
   return (
-    <nav className="flex items-stretch justify-evenly bg-red-400 sticky bottom-0 z-50 p-4 inset-shadow-sm inset-shadow-orange-200">
+    <nav className="flex w-full items-stretch justify-evenly bg-red-400 fixed bottom-0 z-50 p-4 inset-shadow-sm inset-shadow-orange-200">
       <button
         onClick={onMenuButtonClick}
         className={`grow rounded-full rounded-r-none ${

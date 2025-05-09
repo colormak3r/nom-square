@@ -136,9 +136,9 @@ app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
 );
 
-
 app.post("/api/add-menu-item", async (req, res) => {
-  const { name, description, price, rating, allergies, add_ons, photo_url } = req.body;
+  const { name, description, price, rating, allergies, add_ons, photo_url } =
+    req.body;
 
   // ✅ Remove photo_url from required fields
   if (!name || !description || !price) {
@@ -177,7 +177,6 @@ app.post("/api/add-menu-item", async (req, res) => {
   }
 });
 
-
 app.get("/api/get-menu-items", async (req, res) => {
   try {
     const snapshot = await db.collection("menu_items").get();
@@ -215,18 +214,46 @@ app.put("/api/update-menu-item/:id", async (req, res) => {
   }
 
   try {
-    await db.collection("menu_items").doc(id).update({
-      name: name.trim(),
-      description: description.trim(),
-      price: parseFloat(price),
-      rating: parseFloat(rating || 0),
-      allergies: allergies || [],
-      add_ons: add_ons || [],
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    await db
+      .collection("menu_items")
+      .doc(id)
+      .update({
+        name: name.trim(),
+        description: description.trim(),
+        price: parseFloat(price),
+        rating: parseFloat(rating || 0),
+        allergies: allergies || [],
+        add_ons: add_ons || [],
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
 
     res.status(200).json({ message: `Menu item ${id} updated.` });
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/api/create-order", async (req, res) => {
+  const { accountName, orderItems } = req.body;
+
+  if (!accountName || !orderItems) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    const docRef = await db.collection("orders").add({
+      accountName: accountName.trim(),
+      orderItems: orderItems,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`✅ Order ${docRef.id} created.`);
+
+    res
+      .status(200)
+      .json({ message: `Order ${docRef.id} created.`, id: docRef.id });
+  } catch (error) {
+    console.error("❌ Error creating order:", error);
     res.status(500).json({ error: error.message });
   }
 });

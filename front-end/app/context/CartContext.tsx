@@ -1,22 +1,22 @@
 'use client';
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { CartItemInfo, MenuCategoryInfo} from '~/app/types/types';
+import type { OrderItemInfo, MenuCategoryInfo} from '~/app/types/types';
 
-type CartContextType = {
-  cart: CartItemInfo[];
+type OrderContextType = {
+  cart: OrderItemInfo[];
   addToCart: (
       menuItem: MenuCategoryInfo["menuItems"][number],
       options: string[]
     ) => void;
 };
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createContext<OrderContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cart, setCart] = useState<CartItemInfo[]>([]);
+  const [cart, setCart] = useState<OrderItemInfo[]>([]);
 
-  const addToCart = (menuItem: CartItemInfo["menuItem"], options: string[]) => {
+  const addToCart = (menuItem: OrderItemInfo["menuItem"], options: string[]) => {
     setCart((prevCart) => {
       const existingIndex = prevCart.findIndex(
         (item) =>
@@ -44,7 +44,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useCart = () => {
+export const useCartModal = () => {
   const context = useContext(CartContext);
   if (!context) throw new Error('useCart must be used inside a CartProvider');
   return context;
