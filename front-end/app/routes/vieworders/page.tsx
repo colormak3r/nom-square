@@ -76,7 +76,9 @@ export default function ViewOrders() {
 
   return (
     <div className="p-6">
-      <h1 className="text-4xl font-bold text-stone-900 mb-6">View Orders</h1>
+      <h1 className="text-4xl font-bold text-stone-900 mb-6 text-5xl font-pacifico flex flex-col items-center">
+        View Orders
+      </h1>
       {editingOrder && (
         <div className="bg-white p-6 rounded-xl shadow-lg border border-stone-300 max-w-xl mx-auto mb-10">
           <h2 className="text-2xl font-bold mb-4 text-stone-900">Edit Order</h2>
