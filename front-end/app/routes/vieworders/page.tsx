@@ -36,6 +36,7 @@ export default function ViewOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+  const [optionInput, setOptionInput] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -119,16 +120,28 @@ export default function ViewOrders() {
               </label>
               <input
                 className="w-full p-2 border rounded-md"
-                value={item.options?.join(", ") || ""}
+                value={
+                  optionInput[idx] !== undefined
+                    ? optionInput[idx]
+                    : item.options?.join(", ") || ""
+                }
                 onChange={(e) => {
-                  const opts = e.target.value
-                    .split(",")
-                    .map((str) => str.trim())
-                    .filter(Boolean);
+                  const opts = e.target.value;
+                  setOptionInput((prev) => {
+                    const updated = [...prev];
+                    updated[idx] = opts;
+                    return updated;
+                  });
+                }}
+                onBlur={() => {
                   setEditingOrder((prev) => {
                     if (!prev) return prev;
                     const updated = [...prev.orderItems];
-                    updated[idx].options = opts;
+                    updated[idx].options =
+                      optionInput[idx]
+                        ?.split(",")
+                        .map((str) => str.trim())
+                        .filter(Boolean) || [];
                     return { ...prev, orderItems: updated };
                   });
                 }}
