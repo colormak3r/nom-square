@@ -9,6 +9,7 @@ import EmployeesList from "./routes/employeelist/page";
 import NoPermission from "./error/401";
 import NotFound from "./error/404";
 import RequireAdmin from "./components/auth/requiredAmin";
+import ViewOrders from "./routes/vieworders/page";
 import { CartProvider } from "~/app/context/CartContext";
 import { MenuItemModalProvider } from "~/app/context/MenuItemModalContext";
 import { CheckoutProvider } from "./context/CheckoutContext";
@@ -34,6 +35,7 @@ export default function AppRoutes() {
                       </RequireAdmin>
                     }
                   />
+                  <Route path="vieworders" element={<ViewOrders />} />
                 </Route>
               </Route>
               <Route path="/401" element={<NoPermission />} />

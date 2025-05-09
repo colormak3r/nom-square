@@ -52,6 +52,13 @@ export default function Navbar() {
             >
               Menu Editor
             </a>
+            <p className="text-stone-700 font-semibold">•</p>
+            <a
+              href="/vieworders"
+              className="text-stone-700 font-semibold hover:text-stone-900"
+            >
+              View Orders
+            </a>
 
             {user.role === "Admin" && (
               <>
